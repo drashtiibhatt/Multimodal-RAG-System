@@ -1,0 +1,83 @@
+{
+  "query": "create test cases for email verifucation validation",
+  "context_preview": "[Document 1] C:\\Users\\HP\\AppData\\Local\\Temp\\tmpkkuhxgvj.pdf\n\u25cf Support_Tickets.csv\n\u25cf Email_Template.html\n\u25cf Known_Issues.md\nQuery\n\u201cCreate use cases for signup that prevent known issues from recurring\u201d\nS",
+  "result": {
+    "use_cases": [
+      {
+        "title": "UC1 - Verification email with invalid token",
+        "goal": "Ensure the system correctly handles invalid verification tokens",
+        "preconditions": [
+          "User has signed up and received a verification link"
+        ],
+        "test_data": {
+          "token": "invalid_token_example"
+        },
+        "steps": [
+          "User signs up and receives verification link",
+          "Replace the token in the received verification URL with an invalid token",
+          "Attempt to verify the email using the modified URL"
+        ],
+        "expected_results": [
+          "Verification fails with a clear error state",
+          "User is prompted to request a new verification link"
+        ],
+        "negative_cases": [],
+        "boundary_cases": []
+      },
+      {
+        "title": "UC2 - Verification email token expired",
+        "goal": "To validate the system's response when a verification token has expired",
+        "preconditions": [
+          "User has signed up and received a verification link"
+        ],
+        "test_data": {
+          "token_expiry_time": "24 hours"
+        },
+        "steps": [
+          "Sign up and obtain verification link/token",
+          "Wait until token expiry time (24 hours) or simulate expiry if supported",
+          "Attempt to verify email using the expired link"
+        ],
+        "expected_results": [
+          "\"Token expired\" message is displayed",
+          "CTA to resend verification link is available and functional"
+        ],
+        "negative_cases": [],
+        "boundary_cases": [
+          "Verification token exactly at expiry time (24 hours)"
+        ]
+      },
+      {
+        "title": "UC3 - Boundary: Max email length during signup",
+        "goal": "To ensure signup form properly validates and accepts an email at its maximum allowed length",
+        "preconditions": [],
+        "test_data": {
+          "email": "user@example.com"
+        },
+        "steps": [
+          "Open Signup page",
+          "Enter an email at maximum allowed length (254 characters)",
+          "Submit signup form"
+        ],
+        "expected_results": [
+          "Signup form accepts the email if within 254 characters",
+          "Validation error if the email length exceeds 254 characters"
+        ],
+        "negative_cases": [],
+        "boundary_cases": [
+          "Email at maximum length (254 characters)"
+        ]
+      }
+    ],
+    "assumptions": [
+      "Assuming the maximum email length allowed is 254 characters as per documentation and common standards",
+      "Assuming token expiry time functionality is supported and set to 24 hours"
+    ],
+    "missing_information": [],
+    "insufficient_context": false,
+    "clarifying_questions": [],
+    "confidence_score": 0.85,
+    "timestamp": "2026-01-01 23:47:18.422369"
+  },
+  "cached_at": "2026-01-01T23:47:18.422369"
+}

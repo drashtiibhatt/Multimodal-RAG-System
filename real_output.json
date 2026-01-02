@@ -1,0 +1,86 @@
+{
+  "use_cases": [
+    {
+      "title": "Successful Signup with Valid Email and Password",
+      "goal": "To verify that a user can successfully sign up with a valid email and password",
+      "preconditions": [
+        "User is on the signup page"
+      ],
+      "test_data": {
+        "email": "testuser@example.com",
+        "password": "ValidPassword123!"
+      },
+      "steps": [
+        "Navigate to the signup page.",
+        "Enter a valid email address in the email field.",
+        "Enter a valid password in the password field and confirm it.",
+        "Click on the 'Create Account' button."
+      ],
+      "expected_results": [
+        "System validates the email and password.",
+        "System creates the user account with inactive status.",
+        "System sends a verification email.",
+        "System displays a 'Check your email' message to the user."
+      ],
+      "negative_cases": [],
+      "boundary_cases": []
+    },
+    {
+      "title": "Signup with Duplicate Email Registration (ERR_001)",
+      "goal": "To ensure the system rejects duplicate email registrations",
+      "preconditions": [
+        "User is on the signup page",
+        "The email address is already registered in the system"
+      ],
+      "test_data": {
+        "email": "existinguser@example.com",
+        "password": "NewValidPassword123!"
+      },
+      "steps": [
+        "Navigate to the signup page.",
+        "Enter an email address that is already registered in the system.",
+        "Enter a valid password and confirm it.",
+        "Click on the 'Create Account' button."
+      ],
+      "expected_results": [
+        "System checks if email already exists.",
+        "System responds with a 409 Conflict HTTP Status.",
+        "User sees the message: 'This email is already registered. Please login or use a different email.'"
+      ],
+      "negative_cases": [],
+      "boundary_cases": []
+    },
+    {
+      "title": "Signup with Invalid Email Format (ERR_002)",
+      "goal": "To validate that the system correctly handles and rejects malformed email formats",
+      "preconditions": [
+        "User is on the signup page"
+      ],
+      "test_data": {
+        "email": "invalidemail@.com",
+        "password": "ValidPassword123!"
+      },
+      "steps": [
+        "Navigate to the signup page.",
+        "Enter a malformed email address in the email field (e.g., missing domain name).",
+        "Enter a valid password in the password field and confirm it.",
+        "Attempt to proceed with account creation."
+      ],
+      "expected_results": [
+        "System validates email format in real-time and upon submission.",
+        "System responds with a 400 Bad Request HTTP Status.",
+        "User sees the message: 'Please enter a valid email address'"
+      ],
+      "negative_cases": [],
+      "boundary_cases": [
+        "Email at maximum length (254 characters)"
+      ]
+    }
+  ],
+  "assumptions": [],
+  "missing_information": [],
+  "insufficient_context": false,
+  "clarifying_questions": [],
+  "confidence_score": 0.85,
+  "timestamp": "2026-01-01 10:49:40.284382"
+}

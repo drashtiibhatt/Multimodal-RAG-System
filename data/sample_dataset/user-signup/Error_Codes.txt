@@ -1,0 +1,158 @@
+ERROR CODES - User Signup Feature
+
+===========================================
+VALIDATION ERRORS (ERR_001 - ERR_004)
+===========================================
+
+ERR_001: Email Already Registered
+Description: The provided email address already exists in the system
+HTTP Status: 409 Conflict
+Message: "This email is already registered. Please login or use a different email."
+Resolution: User should use a different email or try to login
+Test Case: Attempt signup with existing email
+
+ERR_002: Invalid Email Format
+Description: Email address does not match valid email format
+HTTP Status: 400 Bad Request
+Message: "Please enter a valid email address"
+Resolution: User should provide correctly formatted email
+Example: test@example (missing .com), test@.com (missing name)
+Test Case: Attempt signup with malformed email
+
+ERR_003: Password Too Weak
+Description: Password does not meet security requirements
+HTTP Status: 400 Bad Request
+Message: "Password must be at least 8 characters and contain uppercase, lowercase, number, and special character"
+Resolution: User should create stronger password
+Requirements:
+  - Minimum 8 characters
+  - At least 1 uppercase letter
+  - At least 1 lowercase letter
+  - At least 1 number
+  - At least 1 special character
+Test Case: Attempt signup with weak password (e.g., "12345")
+
+ERR_004: Password Mismatch
+Description: Password and confirm password fields do not match
+HTTP Status: 400 Bad Request
+Message: "Passwords do not match"
+Resolution: User should re-enter matching passwords
+Test Case: Enter different values in password and confirm password fields
+
+===========================================
+VERIFICATION ERRORS (ERR_005 - ERR_007)
+===========================================
+
+ERR_005: Invalid Verification Token
+Description: The verification token is malformed or invalid
+HTTP Status: 400 Bad Request
+Message: "Invalid verification token"
+Resolution: User should request a new verification email
+Test Case: Use modified or corrupted verification token
+
+ERR_006: Verification Token Expired
+Description: Verification token has exceeded 24-hour validity period
+HTTP Status: 410 Gone
+Message: "Verification token has expired. Please request a new one."
+Resolution: User should click "Resend Verification Email"
+Expiry Time: 24 hours from account creation
+Test Case: Use token after 24 hours
+
+ERR_007: Email Already Verified
+Description: User attempts to verify an already verified account
+HTTP Status: 409 Conflict
+Message: "This email address has already been verified"
+Resolution: User can proceed to login
+Test Case: Click verification link twice
+
+===========================================
+RATE LIMITING ERRORS (ERR_008)
+===========================================
+
+ERR_008: Rate Limit Exceeded
+Description: Too many signup attempts from same IP address
+HTTP Status: 429 Too Many Requests
+Message: "Too many signup attempts. Please try again later."
+Resolution: Wait for rate limit window to expire
+Limit: 5 signup attempts per hour per IP address
+Retry After: 3600 seconds (1 hour)
+Test Case: Make 6 signup requests within 1 hour
+
+===========================================
+NOT FOUND ERRORS (ERR_009)
+===========================================
+
+ERR_009: Email Not Found
+Description: Email address not found in system (for resend verification)
+HTTP Status: 404 Not Found
+Message: "Email address not found"
+Resolution: User should sign up first
+Test Case: Request verification resend for non-existent email
+
+===========================================
+SERVER ERRORS (ERR_500 - ERR_503)
+===========================================
+
+ERR_500: Internal Server Error
+Description: Unexpected server error during signup process
+HTTP Status: 500 Internal Server Error
+Message: "An unexpected error occurred. Please try again later."
+Resolution: User should retry after some time
+Test Case: Simulate database connection failure
+
+ERR_502: Email Service Unavailable
+Description: Email verification service is down
+HTTP Status: 502 Bad Gateway
+Message: "Unable to send verification email. Please try again later."
+Resolution: Account is created but verification email failed
+Note: User can request resend later
+Test Case: Simulate email service outage
+
+ERR_503: Service Temporarily Unavailable
+Description: Signup service is under maintenance
+HTTP Status: 503 Service Unavailable
+Message: "Signup service is temporarily unavailable. Please try again later."
+Resolution: Wait for maintenance to complete
+Test Case: During scheduled maintenance window
+
+===========================================
+TESTING GUIDELINES
+===========================================
+
+Boundary Test Cases:
+1. Email at maximum length (254 characters)
+2. Password at minimum length (8 characters)
+3. Password at maximum length (128 characters)
+4. Verification token exactly at expiry time (24 hours)
+5. Rate limit at exactly 5 attempts
+
+Negative Test Cases:
+1. Missing required fields (email, password)
+2. SQL injection attempts in email field
+3. XSS attempts in password field
+4. Extremely long inputs (DoS attempt)
+5. Special characters in email local part
+
+Edge Cases:
+1. Case sensitivity in email (test@example.com vs TEST@example.com)
+2. Whitespace trimming in email field
+3. Unicode characters in password
+4. Multiple simultaneous signups with same email
+5. Clicking verification link multiple times
+
+===========================================
+ERROR RESPONSE FORMAT
+===========================================
+
+Standard error response structure:
+{
+  "error_code": "ERR_XXX",
+  "message": "Human-readable error message",
+  "details": "Additional context (optional)",
+  "field": "Field name that caused error (optional)",
+  "retry_after": 3600 (for rate limiting, optional)
+}
+
+===========================================
+END OF ERROR CODES DOCUMENT
+===========================================

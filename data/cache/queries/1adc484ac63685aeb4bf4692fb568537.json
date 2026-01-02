@@ -1,0 +1,98 @@
+{
+  "query": "Generate test cases for the functionality shown in the uploaded image Screenshot 2025-12-22 at 10.52.24\u202fAM.png",
+  "context_preview": "[Document 1] C:\\Users\\HP\\AppData\\Local\\Temp\\tmpkkuhxgvj.pdf\nRequired output format (for generated test cases)\nAt minimum, produce:\n\u25cf Use Case Title\n\u25cf Goal\n\u25cf Preconditions\n\u25cf Test Data (if applicable)\n\u25cf",
+  "result": {
+    "use_cases": [
+      {
+        "title": "UC1 - Successful Signup with Valid Email and Password",
+        "goal": "Ensure successful signup with a valid email and strong password.",
+        "preconditions": [
+          "User is on the signup page",
+          "Database is online"
+        ],
+        "test_data": {
+          "email": "testuser@example.com",
+          "password": "StrongPassword123!"
+        },
+        "steps": [
+          "Navigate to the signup page.",
+          "Enter a valid email address in the email field.",
+          "Enter a strong password that meets the strength requirements.",
+          "Click on the 'Create Account' button."
+        ],
+        "expected_results": [
+          "User receives a confirmation that an account has been created.",
+          "A verification email is sent to the provided email address."
+        ],
+        "negative_cases": [
+          "Attempting to sign up with an already registered email"
+        ],
+        "boundary_cases": [
+          "Email at maximum length (254 characters)",
+          "Password at minimum length (8 characters)"
+        ]
+      },
+      {
+        "title": "UC2 - Signup with Duplicate Email Rejection",
+        "goal": "Verify that the system rejects signup attempts with an email that's already registered.",
+        "preconditions": [
+          "User is on the signup page",
+          "At least one user is already registered with 'duplicate@example.com'"
+        ],
+        "test_data": {
+          "email": "duplicate@example.com",
+          "password": "AnotherStrongPass!2"
+        },
+        "steps": [
+          "Navigate to the signup page.",
+          "Enter 'duplicate@example.com' in the email field.",
+          "Enter a valid password in the password field.",
+          "Click on the 'Create Account' button."
+        ],
+        "expected_results": [
+          "User is informed that the email is already in use."
+        ],
+        "negative_cases": [
+          "Using a unique email not previously registered"
+        ],
+        "boundary_cases": []
+      },
+      {
+        "title": "UC3 - Verification Email Token Expiry Time",
+        "goal": "Ensure the system properly handles the expiration of email verification tokens.",
+        "preconditions": [
+          "User has completed signup but has not verified their email",
+          "A verification email with a token has been sent"
+        ],
+        "test_data": {
+          "verification_link": "https://example.com/verify?token=ExpiredToken123",
+          "email": "timelyuser@example.com"
+        },
+        "steps": [
+          "Wait for the verification token's expiry time to pass (assumed to be 24 hours after issue).",
+          "Attempt to verify the email address by clicking on the verification link after the token has expired."
+        ],
+        "expected_results": [
+          "User is informed that the verification link has expired and is prompted to request a new verification email."
+        ],
+        "negative_cases": [
+          "Using a verification link within the valid time frame"
+        ],
+        "boundary_cases": [
+          "Verification token exactly at expiry time (24 hours)"
+        ]
+      }
+    ],
+    "assumptions": [
+      "The system uses email verification as part of the signup process.",
+      "Password strength requirements are enforced but not specifically detailed in the provided context.",
+      "Token expiration time is assumed to be 24 hours based on common practices."
+    ],
+    "missing_information": [],
+    "insufficient_context": false,
+    "clarifying_questions": [],
+    "confidence_score": 0.85,
+    "timestamp": "2026-01-02 02:32:18.387999"
+  },
+  "cached_at": "2026-01-02T02:32:18.387999"
+}

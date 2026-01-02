@@ -1,0 +1,83 @@
+{
+  "query": "please create a testcaes for filters that it is working or not",
+  "context_preview": "[Document 1] C:\\Users\\HP\\AppData\\Local\\Temp\\tmpkkuhxgvj.pdf\n\u25cf Support_Tickets.csv\n\u25cf Email_Template.html\n\u25cf Known_Issues.md\nQuery\n\u201cCreate use cases for signup that prevent known issues from recurring\u201d\nS",
+  "result": {
+    "use_cases": [
+      {
+        "title": "UC1 - Successful Signup with Verification Email Check",
+        "goal": "Ensure that a user can sign up successfully and receive a verification email with the correct link.",
+        "preconditions": [
+          "Email sending is enabled in the environment"
+        ],
+        "test_data": {
+          "email": "user@example.com",
+          "password": "SecurePass123!"
+        },
+        "steps": [
+          "Navigate to the Signup page.",
+          "Enter the email and password from the test data.",
+          "Click the 'Create Account' button.",
+          "Check the inbox for the verification email."
+        ],
+        "expected_results": [
+          "A verification email is received.",
+          "The verification email contains exactly one verification link pointing to the correct domain and path, and includes a token parameter."
+        ],
+        "negative_cases": [
+          "Missing required fields (email, password)"
+        ],
+        "boundary_cases": [
+          "Email at maximum length (254 characters)",
+          "Password at minimum length (8 characters)"
+        ]
+      },
+      {
+        "title": "UC2 - Handling of Service Unavailability During Signup",
+        "goal": "Verify the system's response when the signup service is unavailable due to maintenance.",
+        "preconditions": [
+          "Signup service is under maintenance"
+        ],
+        "test_data": {},
+        "steps": [
+          "Attempt to sign up during the maintenance window using valid credentials."
+        ],
+        "expected_results": [
+          "Receive a 503 Service Unavailable HTTP status.",
+          "Display the message: 'Signup service is temporarily unavailable. Please try again later.'"
+        ],
+        "negative_cases": [],
+        "boundary_cases": []
+      },
+      {
+        "title": "UC3 - Validate Throttling on Resend Verification Email",
+        "goal": "Ensure the system does not spam-send multiple emails when the 'Resend verification' action is repeatedly triggered.",
+        "preconditions": [
+          "User has signed up but not verified their account"
+        ],
+        "test_data": {},
+        "steps": [
+          "Click 'Resend verification' 5 times within 1 minute."
+        ],
+        "expected_results": [
+          "Throttling is applied, or only the latest email is considered valid.",
+          "Clear user feedback is provided about the resend limit."
+        ],
+        "negative_cases": [
+          "Rate limit exceeded by more than 5 attempts"
+        ],
+        "boundary_cases": [
+          "Rate limit at exactly 5 attempts"
+        ]
+      }
+    ],
+    "assumptions": [
+      "The documents provided do not specify the detailed UI elements or exact error messages for every scenario, thus generic terms were used."
+    ],
+    "missing_information": [],
+    "insufficient_context": false,
+    "clarifying_questions": [],
+    "confidence_score": 0.85,
+    "timestamp": "2026-01-02 02:16:31.587717"
+  },
+  "cached_at": "2026-01-02T02:16:31.587717"
+}

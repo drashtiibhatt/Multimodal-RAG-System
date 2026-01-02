@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  title: User Signup API
+  version: 1.0.0
+  description: API endpoints for user registration and email verification
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+
+paths:
+  /auth/signup:
+    post:
+      summary: Create new user account
+      description: Registers a new user with email and password
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                  description: User's email address (must be unique)
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  maxLength: 128
+                  example: SecurePass123!
+                  description: Password meeting security requirements
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                  email:
+                    type: string
+                    example: user@example.com
+                  message:
+                    type: string
+                    example: Account created. Please check your email to verify.
+                  verification_sent:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: ERR_002
+                  message:
+                    type: string
+                    example: Invalid email format
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: ERR_001
+                  message:
+                    type: string
+                    example: This email is already registered
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: ERR_008
+                  message:
+                    type: string
+                    example: Too many signup attempts. Please try again later.
+                  retry_after:
+                    type: integer
+                    example: 3600
+
+  /auth/verify-email:
+    get:
+      summary: Verify email address
+      description: Activates user account using verification token
+      tags:
+        - Authentication
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Email verification token sent to user
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email verified successfully. You can now login.
+                  verified:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: ERR_005
+                  message:
+                    type: string
+                    example: Invalid verification token
+        '410':
+          description: Token expired
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: ERR_006
+                  message:
+                    type: string
+                    example: Verification token has expired. Please request a new one.
+
+  /auth/resend-verification:
+    post:
+      summary: Resend verification email
+      description: Sends a new verification email to user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '200':
+          description: Verification email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Verification email sent. Please check your inbox.
+        '404':
+          description: Email not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: ERR_009
+                  message:
+                    type: string
+                    example: Email address not found
+        '409':
+          description: Email already verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                    example: ERR_007
+                  message:
+                    type: string
+                    example: Email is already verified
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error_code:
+          type: string
+        message:
+          type: string
+        details:
+          type: string

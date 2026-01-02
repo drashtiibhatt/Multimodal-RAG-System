@@ -1,0 +1,119 @@
+{
+  "query": "based on the flight booking interface with filters for airlines, stops, and prices, generate test cases",
+  "context_preview": "[Document 1] Screenshot 2025-12-22 at 10.52.24\u202fAM.png\nFilters  \nShowing 682 results  \n\nStops  \nAny 682  \nFrom INR49,925.05  \nDirect only 1  \nFrom INR120,147.17  \n1 stop max 328  \nFrom INR53,923.13  \n\n",
+  "result": {
+    "use_cases": [
+      {
+        "title": "Validate Filter by Stops Functionality",
+        "goal": "Ensure the filter by stops functionality works as expected and shows accurate results.",
+        "preconditions": [
+          "Flight search page is loaded"
+        ],
+        "test_data": {
+          "Any_Stops": "682 results",
+          "Direct_Only": "1 result from INR120,147.17",
+          "1_Stop_Max": "328 results from INR53,923.13"
+        },
+        "steps": [
+          "Navigate to the flight search page.",
+          "Apply the 'Any' stops filter.",
+          "Note the number of results and the price range.",
+          "Clear the filter and apply the 'Direct only' filter.",
+          "Note the number of results and the price.",
+          "Clear the filter and apply the '1 stop max' filter.",
+          "Note the number of results and the price range."
+        ],
+        "expected_results": [
+          "682 results are shown for 'Any' stops filter without any price restriction.",
+          "1 result is shown for 'Direct only' filter with a price from INR120,147.17.",
+          "328 results are shown for '1 stop max' filter with prices from INR53,923.13."
+        ],
+        "negative_cases": [
+          "Applying a filter for more than 1 stop when only 'Direct only' and '1 stop max' options are available."
+        ],
+        "boundary_cases": [
+          "Applying '1 stop max' filter to check if any flight with more than 1 stop is displayed."
+        ]
+      },
+      {
+        "title": "Validate Filter by Airlines Functionality",
+        "goal": "Ensure the filter by airlines functionality accurately displays results per selected airline.",
+        "preconditions": [
+          "Flight search page is loaded"
+        ],
+        "test_data": {
+          "Etihad_Airways": "188 results",
+          "Air_India": "110 results",
+          "Emirates_Airlines": "109 results",
+          "Gulf_Air": "26 results",
+          "British_Airways": "16 results"
+        },
+        "steps": [
+          "Navigate to the flight search page.",
+          "Apply the 'Etihad Airways' filter and note the number of results.",
+          "Repeat the step for Air India, Emirates Airlines, Gulf Air, and British Airways."
+        ],
+        "expected_results": [
+          "188 results are shown for Etihad Airways.",
+          "110 results are shown for Air India.",
+          "109 results are shown for Emirates Airlines.",
+          "26 results are shown for Gulf Air.",
+          "16 results are shown for British Airways."
+        ],
+        "negative_cases": [
+          "Selecting multiple airlines when the interface is designed for single selection."
+        ],
+        "boundary_cases": [
+          "Filtering with the least number of flights (British Airways) to verify the lower limit."
+        ]
+      },
+      {
+        "title": "Validate Flight Times Filter for Departure and Arrival",
+        "goal": "Ensure the flight times filter correctly displays flights based on selected departure and arrival times.",
+        "preconditions": [
+          "Flight search page is loaded"
+        ],
+        "test_data": {
+          "Departure_Times": {
+            "12:00 AM\u20135:59 AM": "250 results",
+            "6:00 AM\u201311:59 AM": "195 results",
+            "12:00 PM\u20135:59 PM": "36 results",
+            "6:00 PM\u201311:59 PM": "201 results"
+          },
+          "Arrival_Times": {
+            "12:00 AM\u20135:59 AM": "9 results",
+            "6:00 AM\u201311:59 AM": "217 results",
+            "12:00 PM\u20135:59 PM": "237 results",
+            "6:00 PM\u201311:59 PM": "219 results"
+          }
+        },
+        "steps": [
+          "Navigate to the flight search page.",
+          "Select a departure time and note the number of available flights.",
+          "Select an arrival time and note the number of available flights.",
+          "Repeat the step for all listed departure and arrival times."
+        ],
+        "expected_results": [
+          "Departure time filters correctly limit the results based on selected time slots.",
+          "Arrival time filters accurately reflect the number of flights available for the selected time slots."
+        ],
+        "negative_cases": [
+          "Selecting a departure time later than the arrival time."
+        ],
+        "boundary_cases": [
+          "Selecting the earliest departure time (12:00 AM) and the latest arrival time (11:59 PM) to test full-day coverage."
+        ]
+      }
+    ],
+    "assumptions": [
+      "The user interface allows for individual selection of filters without requiring page reloads.",
+      "Filters can be cleared or changed after the initial selection."
+    ],
+    "missing_information": [],
+    "insufficient_context": false,
+    "clarifying_questions": [],
+    "confidence_score": 0.85,
+    "timestamp": "2026-01-02 02:44:23.022307"
+  },
+  "cached_at": "2026-01-02T02:44:23.022307"
+}

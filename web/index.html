@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal RAG System</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold">🤖 Multimodal RAG System</h1>
+                    <p class="text-blue-100 mt-1">Intelligent Document Analysis & Use Case Generation</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="status-indicator" class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-sm">System Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Tabs -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button onclick="switchTab('query')" id="tab-query"
+                            class="tab-button active py-4 px-1 border-b-2 font-medium text-sm">
+                        🔍 Query
+                    </button>
+                    <button onclick="switchTab('documents')" id="tab-documents"
+                            class="tab-button py-4 px-1 border-b-2 font-medium text-sm">
+                        📄 Documents
+                    </button>
+                    <button onclick="switchTab('settings')" id="tab-settings"
+                            class="tab-button py-4 px-1 border-b-2 font-medium text-sm">
+                        ⚙️ Settings
+                    </button>
+                    <button onclick="switchTab('stats')" id="tab-stats"
+                            class="tab-button py-4 px-1 border-b-2 font-medium text-sm">
+                        📊 Statistics
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Query Tab -->
+        <div id="content-query" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Query Input Panel -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold mb-4">Ask a Question</h2>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Your Query
+                                </label>
+                                <textarea
+                                    id="query-input"
+                                    rows="4"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="e.g., Create test cases for user login with email validation"></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Results (Top K)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="top-k"
+                                        value="5"
+                                        min="1"
+                                        max="20"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Min Confidence
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="min-confidence"
+                                        value="0.6"
+                                        min="0"
+                                        max="1"
+                                        step="0.1"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="use-hybrid" class="rounded text-blue-600 mr-2">
+                                    <span class="text-sm">Use Hybrid Search</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="use-guards" checked class="rounded text-blue-600 mr-2">
+                                    <span class="text-sm">Enable Safety Guards</span>
+                                </label>
+                            </div>
+
+                            <button
+                                onclick="executeQuery()"
+                                id="query-button"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                                <span id="query-button-text">🚀 Generate Use Cases</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                        <h3 class="font-semibold mb-3">Quick Stats</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Indexed Documents:</span>
+                                <span id="quick-docs" class="font-semibold">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Vectors:</span>
+                                <span id="quick-vectors" class="font-semibold">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Provider:</span>
+                                <span id="quick-provider" class="font-semibold">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold mb-4">Results</h2>
+
+                        <div id="results-container">
+                            <div class="text-center text-gray-500 py-12">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <p class="mt-2">No results yet. Enter a query to get started.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Tab -->
+        <div id="content-documents" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Upload Panel -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-semibold mb-4">Upload Document</h2>
+
+                        <div class="space-y-4">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition" id="drop-zone">
+                                <input type="file" id="file-input" class="hidden" accept=".pdf,.txt,.docx,.png,.jpg,.jpeg,.bmp,.tiff,.gif" onchange="handleFileSelect(event)">
+                                <label for="file-input" class="cursor-pointer">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <p class="mt-2 text-sm text-gray-600">
+                                        Click to upload or drag and drop
+                                    </p>
+                                    <p class="text-xs text-gray-500">PDF, TXT, DOCX, or Images (PNG, JPG, BMP, TIFF, GIF)</p>
+                                    <p class="text-xs text-blue-500 mt-1">📷 Multimodal: Images with OCR & Vision API</p>
+                                </label>
+                            </div>
+
+                            <!-- File Preview Area -->
+                            <div id="file-preview" class="hidden mt-4">
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex items-start space-x-3 flex-1">
+                                            <div id="preview-icon" class="flex-shrink-0"></div>
+                                            <div class="flex-1 min-w-0">
+                                                <p id="preview-filename" class="text-sm font-medium text-gray-900 truncate"></p>
+                                                <p id="preview-details" class="text-xs text-gray-500 mt-1"></p>
+                                            </div>
+                                        </div>
+                                        <button onclick="clearFileSelection()" class="text-gray-400 hover:text-gray-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <!-- Image Thumbnail -->
+                                    <div id="image-thumbnail" class="hidden mt-3">
+                                        <img id="thumbnail-img" class="max-w-full h-auto rounded border border-gray-300" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="upload-status" class="hidden"></div>
+
+                            <button
+                                onclick="uploadDocument()"
+                                id="upload-button"
+                                disabled
+                                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-semibold py-3 px-4 rounded-lg transition duration-200">
+                                📤 Upload & Index
+                            </button>
+
+                            <button
+                                onclick="clearAllDocuments()"
+                                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                                🗑️ Clear All Documents
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents List -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">Indexed Documents</h2>
+                            <button onclick="loadDocuments()" class="text-blue-600 hover:text-blue-700">
+                                🔄 Refresh
+                            </button>
+                        </div>
+
+                        <div id="documents-list">
+                            <div class="text-center text-gray-500 py-8">
+                                <p>Loading documents...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="content-settings" class="tab-content hidden">
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-6">System Settings</h2>
+
+                    <div id="settings-form" class="space-y-6">
+                        <!-- Settings will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="content-stats" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">Vector Store</h3>
+                    <div id="stats-vectorstore" class="space-y-2"></div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">Embedding Cache</h3>
+                    <div id="stats-embedding-cache" class="space-y-2"></div>
+                    <button onclick="clearCache()" class="mt-4 text-sm text-red-600 hover:text-red-700">
+                        Clear Cache
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">Query Cache</h3>
+                    <div id="stats-query-cache" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <script src="static/app.js"></script>
+</body>
+</html>

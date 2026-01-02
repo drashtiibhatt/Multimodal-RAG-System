@@ -1,0 +1,90 @@
+{
+  "use_cases": [
+    {
+      "title": "Attempt signup with a previously registered email",
+      "goal": "To verify the system rejects a signup attempt with an email already registered in the system",
+      "preconditions": [
+        "The email address user@example.com is already registered in the system"
+      ],
+      "test_data": {
+        "email": "user@example.com",
+        "password": "SecurePass123!"
+      },
+      "steps": [
+        "Navigate to the signup form",
+        "Enter the email address 'user@example.com' and password 'SecurePass123!'",
+        "Submit the signup form"
+      ],
+      "expected_results": [
+        "Receive a 409 Conflict HTTP status",
+        "Display error message: 'This email is already registered. Please login or use a different email.'"
+      ],
+      "negative_cases": [],
+      "boundary_cases": []
+    },
+    {
+      "title": "Attempt signup with a unique email",
+      "goal": "To verify the system allows a signup attempt with a unique, previously unregistered email",
+      "preconditions": [
+        "No pre-existing users in the system",
+        "The email address newuser@example.com is not registered in the system"
+      ],
+      "test_data": {
+        "email": "newuser@example.com",
+        "password": "SecurePass123!"
+      },
+      "steps": [
+        "Navigate to the signup form",
+        "Enter the email address 'newuser@example.com' and password 'SecurePass123!'",
+        "Submit the signup form"
+      ],
+      "expected_results": [
+        "Receive a 201 status code indicating account created successfully",
+        "Display success message or redirection to a success page"
+      ],
+      "negative_cases": [],
+      "boundary_cases": []
+    },
+    {
+      "title": "Attempt signup with maximum valid email length",
+      "goal": "To test the system's handling of an email at the maximum valid length",
+      "preconditions": [
+        "There are no pre-existing users in the system"
+      ],
+      "test_data": {
+        "email": "a1234567890123456789012345678901234567890123456789012345678901234@example.com",
+        "password": "SecurePass123!"
+      },
+      "steps": [
+        "Navigate to the signup form",
+        "Enter the email address 'a1234567890123456789012345678901234567890123456789012345678901234@example.com' and password 'SecurePass123!'",
+        "Submit the signup form"
+      ],
+      "expected_results": [
+        "Receive a 201 status code indicating account created successfully or a validation error if the system has a lower maximum email length not specified in the provided documents"
+      ],
+      "negative_cases": [],
+      "boundary_cases": [
+        "Email length at the system's maximum accepted length"
+      ]
+    }
+  ],
+  "assumptions": [
+    "Assuming the system has a maximum email length that is not specified in the provided documents, leading to potential validation error for the boundary case."
+  ],
+  "missing_information": [
+    "The specific maximum email length accepted by the system is not provided."
+  ],
+  "insufficient_context": false,
+  "clarifying_questions": [],
+  "confidence_score": 0.85,
+  "timestamp": "2026-01-01 11:01:53.436752",
+  "hallucination_warning": true,
+  "hallucination_issues": [
+    "Low confidence in output quality (score: 0.57, minimum: 0.6)"
+  ],
+  "safety_passed": true,
+  "safety_warnings": [
+    "Hallucination: Low confidence in output quality (score: 0.57, minimum: 0.6)"
+  ]
+}
